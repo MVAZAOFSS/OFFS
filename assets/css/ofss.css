@@ -1,0 +1,129 @@
+.page-above{
+    height: 0.7%;
+    border-bottom: 1px solid #ccc;
+    
+}
+.page1-above{
+  height: 3%;
+  border-bottom: 1px solid #ccc; 
+}
+#content{
+    padding: 0 auto;
+    margin-left: 170px;
+    margin-right: 170px;
+    border-right: 1px solid #ccc;
+    height: 600px;
+}
+#content1{
+    padding: 0 auto;
+    margin-left: 170px;
+    margin-right: 170px;
+    height: 70%;
+    border-left: 0px solid #ccc;
+    border-right: 0px solid #ccc;
+}
+.cst{
+    padding-top: 50px;
+    margin-left: 30px;
+    position: absolute;
+    width: 80%;
+}
+.cst1{
+    padding-top: 50px;
+    margin-left: 0px;
+    position: absolute;
+    width: 50%;
+}
+#dt{
+    padding-top: 15px;
+}
+.tabbable {
+}
+.tabbable:before, .tabbable:after {
+    content: "";
+    display: table;
+    line-height: 0;
+}
+.tabbable:after {
+    clear: both;
+}
+.tab-content {
+    overflow: auto;
+   
+    border-radius: 4px;
+}
+.tab-content > .tab-pane, .pill-content > .pill-pane {
+    display: none;
+}
+.tab-content > .active, .pill-content > .active {
+    display: block;
+}
+.tabs-below > .nav-tabs {
+    border-top: 1px solid #DDDDDD;
+}
+.tabs-below > .nav-tabs > li {
+    margin-bottom: 0;
+    margin-top: -1px;
+}
+.tabs-below > .nav-tabs > li > a {
+    border-radius: 0 0 4px 4px;
+}
+.tabs-below > .nav-tabs > li > a:hover {
+    border-bottom-color: rgba(0, 0, 0, 0);
+    border-top-color: #DDDDDD;
+}
+.tabs-below > .nav-tabs > .active > a, .tabs-below > .nav-tabs > .active > a:hover {
+    border-color: rgba(0, 0, 0, 0) #DDDDDD #DDDDDD;
+    cursor: pointer;
+}
+.tabs-left > .nav-tabs > li, .tabs-right > .nav-tabs > li {
+    float: none;
+}
+.tabs-left > .nav-tabs > li > a, .tabs-right > .nav-tabs > li > a {
+    margin-bottom: 3px;
+    margin-right: 0;
+    min-width: 74px;
+}
+.tabs-left > .nav-tabs {
+    border-right: 1px solid #DDDDDD;
+    float: left;
+    margin-right: 19px;
+}
+.tabs-left > .nav-tabs > li > a {
+    border-radius: 4px;
+    margin-right: -1px;
+}
+.tabs-left > .nav-tabs > li > a:hover {
+    border-color: #EEEEEE #DDDDDD #EEEEEE #EEEEEE;
+    cursor: pointer;
+}
+.tabs-left > .nav-tabs .active > a, .tabs-left > .nav-tabs .active > a:hover {
+    border-color: #DDDDDD rgba(0, 0, 0, 0) #DDDDDD #DDDDDD;
+}
+.tabs-right > .nav-tabs {
+    border-left: 1px solid #DDDDDD;
+    float: right;
+    margin-left: 19px;
+}
+.tabs-right > .nav-tabs > li > a {
+    border-radius: 0 4px 4px 0;
+    margin-left: -1px;
+}
+.tabs-right > .nav-tabs > li > a:hover {
+    border-color: #EEEEEE #EEEEEE #EEEEEE #DDDDDD;
+    
+}
+.tabs-right > .nav-tabs .active > a, .tabs-right > .nav-tabs .active > a:hover {
+    border-color: #DDDDDD #DDDDDD #DDDDDD rgba(0, 0, 0, 0);
+}
+.error{
+    color: red;
+    font-size: 12px;
+}
+#fndetail{
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    height: 470px;
+    overflow-y: scroll;
+     clear: both;
+}
