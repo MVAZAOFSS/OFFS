@@ -68,18 +68,33 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><h4>DIESEL</h4></a></li>
            </ul>
           <ul class="list-group">
-              <?php
-              $rez=$this->db->get('tb_update');
+              <li class="list-group-item"><div class="btn-group btn-group-xs"><a href="#" class="btn btn-success btn-xs" data-toggle="dropdown">Diesel cost <span class="fa fa-caret-down"></span></a>
+                      <table class="dropdown-menu table table-striped table-bordered" role="menu">
+                          <thead><tr><th>Cost</th><th>Update date</th></tr></thead>
+                          <tbody>
+                              <?php
+              $rez=$this->db->get_where('tb_update',array('stat_role'=>$this->session->userdata('role_station')));
               foreach ($rez->result() as $row){
+                  if(!$row->diesel==''){
               ?>
-              <li class="list-group-item"><a href="#">Diesel cost  <span class="badge pull-right"><?php echo $row->diesel;?></span></a></li>
-              <?php
+                              <tr><td><?php echo $row->diesel;?></td><td><?php echo $row->updated_date;?></td></tr>
+                          <?php
+              }
               }
               ?>
+                          </tbody>
+                      </table> 
+                  
+                 </div></li>
+              
               <div class="form-group">
             <li class="list-group-item">Diesel cost Today
                 <?php echo form_error('dsc','<div class="alert-danger">','</div>');?>
                 <input type="text" name="dsc" class="form-control" value="<?php echo set_value('dsc');?>">
+            </li>
+            <li class="list-group-item">Date Updated
+                <?php echo form_error('update','<div class="alert-danger">','</div>');?>
+                <input type="text" name="update" class="form-control datepicker">
             </li>
               </div>
           </ul>

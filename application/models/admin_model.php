@@ -211,40 +211,43 @@
               $this->db->update('tb_oil',$data_entry);
           }
       }
-      function petrol_cost($petrol,$roles){
+      function petrol_cost($petrol,$roles,$update){
           $data_array=array(
               'petrol'=>$petrol,
-              'stat_role'=>$roles
+              'stat_role'=>$roles,
+              'updated_date'=>$update
           );
-          $res=  $this->db->get_where('tb_update',array('stat_role'=>  $this->session->userdata('role_station')));
+         $res= $this->db->get_where('tb_update',array('petrol'=>$petrol,'stat_role'=>  $this->session->userdata('role_station'),'updated_date'=>$update));
           if($res->num_rows()===1){
-              $this->db->where('stat_role',  $this->session->userdata('role_station'));
+              $this->db->where(array('stat_role'=>$this->session->userdata('role_station'),'updated_date'=>$update));
               $this->db->update('tb_update',$data_array);
           }  else {
               $this->db->insert('tb_update',$data_array);
           }
       }
-      function diesel_cost($diesel,$roles){
+      function diesel_cost($diesel,$roles,$update){
           $data_array=array(
               'diesel'=>$diesel,
-              'stat_role'=>$roles
+              'stat_role'=>$roles,
+              'updated_date'=>$update
           );
-          $res=  $this->db->get_where('tb_update',array('stat_role'=>  $this->session->userdata('role_station')));
+          $res=  $this->db->get_where('tb_update',array('diesel'=>$diesel,'stat_role'=>  $this->session->userdata('role_station'),'updated_date'=>$update));
           if($res->num_rows()===1){
-              $this->db->where('stat_role',  $this->session->userdata('role_station'));
+              $this->db->where(array('stat_role'=>$this->session->userdata('role_station'),'updated_date'=>$update));
               $this->db->update('tb_update',$data_array);
           }  else {
               $this->db->insert('tb_update',$data_array);
           }
       }
-      function kerosine_cost($kerosine,$roles){
+      function kerosine_cost($kerosine,$roles,$update){
           $data_array=array(
               'kerosine'=>$kerosine,
-              'stat_role'=>$roles
+              'stat_role'=>$roles,
+              'updated_date'=>$update
           );
-          $res=  $this->db->get_where('tb_update',array('stat_role'=>  $this->session->userdata('role_station')));
-          if($res->num_rows()===1){
-              $this->db->where('stat_role',  $this->session->userdata('role_station'));
+          $res=  $this->db->get_where('tb_update',array('kerosine'=>$kerosine,'stat_role'=>  $this->session->userdata('role_station'),'updated_date'=>$update));
+          if($res->num_rows()>0){
+              $this->db->where(array('stat_role'=>$this->session->userdata('role_station'),'updated_date'=>$update));
               $this->db->update('tb_update',$data_array);
           }  else {
               $this->db->insert('tb_update',$data_array);

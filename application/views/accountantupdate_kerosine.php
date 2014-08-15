@@ -34,25 +34,32 @@
         <li class="dropdown list-group-item">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><h4>KEROSINE</h4></a></li>
            </ul>
-          <ul class="list-group">
-              <?php
-              $rez=$this->db->get('tb_update');
+          <table class="table table-striped table-bordered" id="petrolz">
+           <thead><tr><th>Cost</th><th>Update date</th></tr></thead>
+           <tbody>
+             <?php
+              $rez=$this->db->get_where('tb_update',array('stat_role'=>$this->session->userdata('role_station')));
               foreach ($rez->result() as $row){
+                  if(!$row->kerosine==''){
               ?>
-             <div class="form-group">
-            <li class="list-group-item">Kerosine cost Today
-                <li class="list-group-item"><a href="#">Kerosine cost  <span class="badge pull-right"><?php echo $row->kerosine;?></span></a></li>
-            </li>
-              </div>
-          </ul>
-            <?php
+              <tr><td><?php echo $row->kerosine;?></td><td><?php echo $row->updated_date;?></td></tr>
+              <?php
+              }
               }
               ?>
+                          </tbody>
+                      </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    $("#petrolz").dataTable({
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers"
+       });
+</script>
 
 <?php include_once 'footer.php';?>
 

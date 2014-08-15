@@ -1,9 +1,9 @@
 <div id="fndetail" class="col-lg-12">
+    <p class="alert alert-info">Petrol Month Report</p>
+        
+    <form id="month">
     <table class="table-striped" width="100%">
      <tr>
-         <td>
-             <label>Petrol Month Report</label>
-         </td>
          <td>
              <label> Select Month</label>
          </td>
@@ -24,22 +24,35 @@
                  <option value="12">Dec</option>
              </select>
          </td>
+         <td>
+             Year:
+         </td>
+         <td>
+             <input type="text" name="yaerz" value="<?php echo date('Y');?>" class="form-control yearz">
+         </td>
+         <td>
+             <button class="btn btn-success">Go!</button>
+         </td>
      </tr>
 </table>
+        </form>
  <div class="olddate"></div>
 </div>
 <script>
-    $('#cyle').change(function(){
-        $('.olddate').html('<img src="<?php echo base_url('img/load.gif');?>">');
-        var month=document.getElementById('cyle').value;
-        var url="<?php echo site_url('accountant_controller/check_month');?>";
-          var url2=url+'/'+$.trim(month);
-        $.get(url2,function(data){
-            setTimeout(function(){
-            $('.olddate').html(data);
-            },2000);
-        });
+    $('#month').submit(function(e){
+        e.preventDefault();
+    $('.olddate').html('<img src="<?php echo base_url('img/load.gif');?>">');
+     var month=document.getElementById('cyle').value;
+    var url="<?php echo site_url('accountant_controller/check_month');?>";
+    var url2=url+'/'+$.trim(month);
+    var url3=url2+'/'+$('.yearz').val();
+    $.get(url3,function(data){
+        setTimeout(function(){
+        $('.olddate').html(data);
+        },2000);
     });
-            
+    
+    });
+          
    
 </script>

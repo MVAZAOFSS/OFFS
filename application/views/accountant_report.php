@@ -15,12 +15,13 @@
             <i class="fa fa-cog"></i> Options <b class=" fa fa-caret-right"></b></a>
             </div>
             </label>
-               <a href="<?php echo site_url('accountant_controller/printz');?>" title="Print general report" class="ckl btn btn-default btn-sm"><span class="fa fa-print pull-right"></span></a>
-               <button title="view general report" class="btn btn-default btn-xs pull-right ckl1" onclick="general()">view</button>
+              <div class="btn-group btn-group-xs ckl1"><button title="view general report" class="btn btn-default btn-xs pull-right" data-toggle="dropdown">view</button>
+                  <ul class=" dropdown-menu" role="menu">
+                      <li><a href="#" onclick="weekView()">Week view</a></li> 
+                      <li><a href="#" onclick="general()">Month view</a></li> 
+                  </ul>
+               </div>
         </div>
-        <script>
-            $(document).tooltip();
-        </script>
         <div class="col-lg-4">
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -97,6 +98,15 @@
                     $('.petrol').html(data);
                 },2000);
             });
+        }
+        function weekView(){
+          $('.petrol').html('Loading...');
+            var url="<?php echo site_url('accountant_controller/weekView');?>";
+            $.get(url,function(data){
+                setTimeout(function(){
+                $('.petrol').html(data);
+                },2000);
+            });  
         }
      </script>
       <script>

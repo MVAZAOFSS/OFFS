@@ -1236,13 +1236,15 @@
          $data=$data1+$data2+$data3+$data4+$data5+$data6+$data7+$data8+$data9+$data10+$data11+$data12
                  +$data13+$data14+$data15+$data17+$data18+$data19+$data20;
          $this->form_validation->set_rules('psc','Petrol cost','trim|required|alpha_numeric|xss_clean');
+         $this->form_validation->set_rules('update','update date','trim|required|xss_clean');
          if($this->form_validation->run()===FALSE){
              $this->load->view('petrol_update',$data);
          }  else {
              $this->load->model('admin_model');
              $petrol=  $this->input->post('psc');
+             $update=  $this->input->post('update');
              $roles=  $this->session->userdata('role_station');
-             $this->admin_model->petrol_cost($petrol,$roles);
+             $this->admin_model->petrol_cost($petrol,$roles,$update);
              $data['smg']='<p class="alert alert-success">Cost updated</p>';
              $this->load->view('petrol_update',$data);
          }
@@ -1270,13 +1272,15 @@
          $data=$data1+$data2+$data3+$data4+$data5+$data6+$data7+$data8+$data9+$data10+$data11+$data12
                  +$data13+$data14+$data15+$data17+$data18+$data19+$data20;
          $this->form_validation->set_rules('dsc','Diesel cost','trim|required|alpha_numeric|xss_clean');
+         $this->form_validation->set_rules('update','Update date','trim|required|xss_clean');
          if($this->form_validation->run()===FALSE){
              $this->load->view('diesel_update',$data);
          }  else {
              $this->load->model('admin_model');
              $diesel=  $this->input->post('dsc');
+             $update=  $this->input->post('update');
              $roles=  $this->session->userdata('role_station');
-             $this->admin_model->diesel_cost($diesel,$roles);
+             $this->admin_model->diesel_cost($diesel,$roles,$update);
              $data['smg']='<p class="alert alert-success">Cost updated</p>';
              $this->load->view('diesel_update',$data);
          }
@@ -1304,13 +1308,15 @@
          $data=$data1+$data2+$data3+$data4+$data5+$data6+$data7+$data8+$data9+$data10+$data11+$data12
                  +$data13+$data14+$data15+$data17+$data18+$data19+$data20;
          $this->form_validation->set_rules('ksc','kerosine cost','trim|required|alpha_numeric|xss_clean');
+         $this->form_validation->set_rules('update','update date','trim|required|xss_clean');
          if($this->form_validation->run()===FALSE){
              $this->load->view('kerosine_update',$data);
          }  else {
              $this->load->model('admin_model');
              $kerosine=  $this->input->post('ksc');
+             $update=  $this->input->post('update');
              $roles=  $this->session->userdata('role_station');
-             $this->admin_model->kerosine_cost($kerosine,$roles);
+             $this->admin_model->kerosine_cost($kerosine,$roles,$update);
              $data['smg']='<p class="alert alert-success">Cost updated</p>';
              $this->load->view('kerosine_update',$data);
          }

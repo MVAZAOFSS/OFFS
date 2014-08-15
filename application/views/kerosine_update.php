@@ -68,18 +68,33 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><h4>KEROSINE</h4></a></li>
            </ul>
           <ul class="list-group">
-              <?php
-              $rez=$this->db->get('tb_update');
+              <li class="list-group-item"><div class="btn-group btn-group-xs"><a href="#" class="btn btn-success btn-xs" data-toggle="dropdown">Kerosine cost <span class="fa fa-caret-down"></span></a>
+                      <table class="dropdown-menu table table-striped table-bordered" role="menu">
+                          <thead><tr><th>Cost</th><th>Update date</th></tr></thead>
+                          <tbody>
+                              <?php
+              $rez=$this->db->get_where('tb_update',array('stat_role'=>$this->session->userdata('role_station')));
               foreach ($rez->result() as $row){
+                  if(!$row->kerosine==''){
               ?>
-              <li class="list-group-item"><a href="#">Kerosine cost  <span class="badge pull-right"><?php echo $row->kerosine;?></span></a></li>
+                              <tr><td><?php echo $row->kerosine;?></td><td><?php echo $row->updated_date;?></td></tr>
               <?php
+               }
               }
               ?>
+                          
+                     </tbody>
+                      </table> 
+                  
+                 </div></li>
               <div class="form-group">
             <li class="list-group-item">Kerosine cost Today
                 <?php echo form_error('ksc','<div class="alert-danger">','</div>');?>
                 <input type="text" name="ksc" class="form-control" value="<?php echo set_value('ksc');?>">
+            </li>
+            <li class="list-group-item">Date Updated
+                <?php echo form_error('update','<div class="alert-danger">','</div>');?>
+                <input type="text" name="update" class="form-control datepicker">
             </li>
               </div>
           </ul>

@@ -1,45 +1,38 @@
-<div id="fndetail" class="col-lg-12">
-    <div class="well-sm">Petrol Year Report</div>
-    <table class="table">
-        <tr>
-            <td class="warning">
-                Purchase price per Litre:
-            </td>
-            <td class="active">
-                <?php if(!$sold_amount||!$sold_litre){
-                   echo 'Nothing has been sold';
-                }  else {
-                    echo $sold_amount / $sold_litre;
-                }
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td class="success">
-                Profit per Litre per Year:
-            </td>
-            <td class="active">
-                <?php if(!$sold_amount||!$sold_litre||!$petrol_price){
-                   echo '0';
-                }  else {
-                   echo 365*($petrol_price- ($sold_amount / $sold_litre));
-                }
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td class="warning">
-                Profit Margin per Year:
-            </td>
-            <td class="active">
-                <?php if(!$sold_amount||!$sold_litre||!$petrol_price){
-                   echo '0';
-                }  else {
-                   $prifit= $petrol_price- ($sold_amount / $sold_litre);
-                   echo 365*($sold_litre * $prifit);
-                }
-                ?>
-            </td>
-        </tr>
-    </table>
+<div class="col-lg-12">
+    <table class="table-striped" width="100%">
+     <tr>
+         <td>
+             <label>Day Report</label>
+         </td> 
+         <td>
+             <label>From</label>
+         </td>
+         <td>
+          <input type="text" name="datez" class="form-control datepicker" placeholder="select date" required>
+         </td>
+     </tr>
+</table>
+ <div class="olddate"></div>
 </div>
+<script>
+    $('.datepicker').datepicker({
+        dateFormat: 'mm-dd-yy',
+        defaultDate: '-1w',
+        changeMonth: true,
+        maxDate: 0,
+        rangeSelect: true,
+        changeYear: true,
+        showButtonPanel: true,
+        showWeek: true,
+        onSelect: function(date,instance){
+            $('.olddate').html('<img src="<?php echo base_url('img/load.gif');?>">');
+           var url="<?php echo site_url('accountant_controller/day_all_view');?>";
+           var url2=url+'/'+$(this).val();
+           $.get(url2,function(data){
+               setTimeout(function(){
+               $('.olddate').html(data);
+               },2000);
+           });
+        }
+    });
+</script>

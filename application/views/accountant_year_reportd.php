@@ -1,45 +1,60 @@
-<div id="fndetail" class="col-lg-12">
-    <div class="well-sm">Diesel Year Report</div>
-    <table class="table">
-        <tr>
-            <td class="warning">
-                Purchase price per Litre:
-            </td>
-            <td class="active">
-                <?php if(!$sold_amount1||!$sold_litre1){
-                   echo 'Nothing has been sold';
-                }  else {
-                    echo $sold_amount1 / $sold_litre1;
-                }
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td class="success">
-                Profit per Litre per Year:
-            </td>
-            <td class="active">
-                <?php if(!$sold_amount1||!$sold_litre1||!$petrol_price){
-                   echo '0';
-                }  else {
-                   echo 365*($petrol_price- ($sold_amount1 / $sold_litre1));
-                }
-                ?>
-            </td>
-        </tr>
-        <tr>
-            <td class="warning">
-                Profit Margin per Year:
-            </td>
-            <td class="active">
-                <?php if(!$sold_amount1||!$sold_litre1||!$petrol_price){
-                   echo '0';
-                }  else {
-                   $prifit= $petrol_price- ($sold_amount1 / $sold_litre1);
-                   echo 365*($sold_litre1 * $prifit);
-                }
-                ?>
-            </td>
-        </tr>
-    </table>
+<div class="col-lg-12">
+    <form id="form">
+    <table class="table-striped" width="100%">
+     <tr>
+         <td>
+             <label>Week Report</label>
+         </td> 
+         <td>
+             <label>From</label>
+         </td>
+         <td>
+          <input type="text" name="datez" class="form-control datepicker" placeholder="select date" required>
+         </td>
+         <td>
+             <label>To</label>
+         </td>
+         <td>
+          <input type="text" name="datez" class="form-control datepicker1" placeholder="select date" required>
+         </td>
+         <td>
+             <button class="btn btn-success" name="save">Go!</button>
+         </td>
+     </tr>
+</table>
+    </form>
+ <div class="olddate"></div>
 </div>
+<script>
+    $('.datepicker').datepicker({
+        dateFormat: 'mm-dd-yy',
+        defaultDate: '-1w',
+        changeMonth: true,
+        maxDate: 0,
+        rangeSelect: true,
+        changeYear: true,
+        showButtonPanel: true,
+        showWeek: true});
+    $('.datepicker1').datepicker({
+        dateFormat: 'mm-dd-yy',
+        defaultDate: '-1w',
+        changeMonth: true,
+        maxDate: 0,
+        rangeSelect: true,
+        changeYear: true,
+        showButtonPanel: true,
+        showWeek: true});
+    $('#form').submit(function(e){
+        e.preventDefault();
+            $('.olddate').html('<img src="<?php echo base_url('img/load.gif');?>">');
+           var url="<?php echo site_url('accountant_controller/week_all_view');?>";
+           var url2=url+'/'+$('.datepicker').val();
+           var url3=url2+'/'+$('.datepicker1').val();
+           $.get(url3,function(data){
+               setTimeout(function(){
+               $('.olddate').html(data);
+               },2000);
+           });
+        });
+   
+</script>

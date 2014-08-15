@@ -1701,9 +1701,32 @@ function do_check25(){
          $data['hist']=$id;
          $this->load->view('oilreport_info',$data);
      }
-     function extensibility(){
-        $res=  $this->db->select_sum('cash_used')->from('tb_expenditure')
-                ->where(array('stat_role'=>  $this->session->userdata('role_station')))->get();
+     function extensibility($month,$year){
+        $this->db->select_sum('cash_used');
+        $this->db->from('tb_expenditure');
+        $this->db->like('date_entered',$month,'after');
+        $this->db->like('date_entered',$year,'before');
+        $this->db->where(array('stat_role'=>  $this->session->userdata('role_station')));
+         $res= $this->db->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $data_array=array(
+                     'cash'=>$row->cash_used,
+                 );
+             }
+        unset($row);
+        return $data_array;
+        }  else {
+         $data_array=array(
+         'cash'=>''
+          );
+         return $data_array;
+     }
+     }function extensibility1($date,$date2){
+        $this->db->select_sum('cash_used');
+        $this->db->from('tb_expenditure');
+        $this->db->where(array('date_entered >='=>$date,'date_entered <='=>$date2,'stat_role'=>  $this->session->userdata('role_station')));
+         $res= $this->db->get();
          if($res->num_rows()>0){
              foreach ($res->result() as $row){
                  $data_array=array(
@@ -1996,7 +2019,7 @@ public function alert12() {
      $res=  $this->db->get_where('tb_petrol',array('sold_date'=>$date,'seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
      $data1=  $this->semiPetrol($date);
      $data2=  $this->quarterPetrol($date);
-     $data3=  $this->petrolUpdatez();
+     $data3=  $this->petrolUpdatez($date);
      $data=$data1+$data2+$data3;
     if($res->num_rows()>0){
      $this->load->view('accountant_semi_report',$data);
@@ -2010,7 +2033,7 @@ public function alert12() {
  function week_petrol($date='',$date2=''){
      $data1=  $this->yearPetrol($date, $date2);
      $data2=  $this->petrol_solddate($date, $date2);
-     $data3=  $this->petrolUpdatez();
+     $data3=  $this->petrolUpdatez1($date,$date2);
      $data=$data1+$data2+$data3;
      $this->db->select('*');
      $this->db->from('tb_petrol');
@@ -2025,20 +2048,21 @@ public function alert12() {
  function monthPetrol(){
      $this->load->view('accountant_month_report');
  }
- function check_month($month=''){
-     $data1=  $this->dayGeneral($month);
-     $data2=  $this->weekGeneral($month);
-     $data3=  $this->petrolUpdatez();
+ function check_month($month='',$year=''){
+     $data1=  $this->dayGeneral($month,$year);
+     $data2=  $this->weekGeneral($month,$year);
+     $data3=  $this->petrolUpdatez2($month,$year);
      $data=$data1+$data2+$data3;
      $this->db->select('*');
      $this->db->from('tb_petrol');
      $this->db->like('sold_date',$month,'after');
+     $this->db->like('sold_date',$year,'before');
      $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
-    $res=  $this->db->get();
+     $res=  $this->db->get();
      if($res->num_rows()>0){
-         $this->load->view('accountant_day_reportg',$data);
-     }  else {
-        echo '<p class="alert alert-warning"> Nothing sold to this '.$month.' '.'Month</p>'; 
+       $this->load->view('accountant_day_reportg',$data);
+     }else{
+        echo '<p class="alert alert-warning"> Nothing sold to this '.$month.' '.'Month and this '.$year.' Year</p>'; 
      }
  }
  function quarterPetrol($date){
@@ -2112,9 +2136,13 @@ public function alert12() {
              return $petrola_data;
          }
  }
- function dayGeneral($month){
-   $res=  $this->db->select_sum('sold_litre')->from('tb_petrol')
-                ->like('sold_date',$month,'after')->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+ function dayGeneral($month,$year){
+   $this->db->select_sum('sold_litre');
+   $this->db->from('tb_petrol');
+   $this->db ->like('sold_date',$month,'after');
+   $this->db->like('sold_date',$year,'before');
+   $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+   $res=  $this->db->get();
          if($res->num_rows()>0){
              foreach ($res->result() as $row){
                  $petrola_data=array(
@@ -2130,8 +2158,13 @@ public function alert12() {
              return $petrola_data;
          }  
  }
- function weekGeneral($month){
-    $res=  $this->db->select_sum('sold_amount')->from('tb_petrol')->like('sold_date',$month,'after')->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+ function weekGeneral($month,$year){
+    $this->db->select_sum('sold_amount');
+    $this->db->from('tb_petrol');
+    $this->db->like('sold_date',$month,'after');
+    $this->db->like('sold_date',$year,'before');    
+    $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+    $res=$this->db->get();
          if($res->num_rows()>0){
              foreach ($res->result() as $row){
                  $petrola_data=array(
@@ -2154,7 +2187,7 @@ public function alert12() {
      $res=  $this->db->get_where('tb_diesel',array('sold_date'=>$date,'seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
      $data1=  $this->semiDiesel($date);
      $data2=  $this->quarterDiesel($date);
-     $data3=  $this->dieselUpdatez();
+     $data3=  $this->dieselUpdatez($date);
      $data=$data1+$data2+$data3;
     if($res->num_rows()>0){
      $this->load->view('accountant_semi_reportd',$data);
@@ -2168,7 +2201,7 @@ public function alert12() {
  function week_diesel($date='',$date2=''){
      $data1=  $this->yearDiesel($date, $date2);
      $data2=  $this->diesel_solddate($date, $date2);
-     $data3=  $this->dieselUpdatez();
+     $data3=  $this->dieselUpdatez1($date,$date2);
      $data=$data1+$data2+$data3;
      $this->db->select('*');
      $this->db->from('tb_diesel');
@@ -2183,14 +2216,15 @@ public function alert12() {
  function monthDiesel(){
      $this->load->view('accountant_month_reportd');
  }
- function check_month1($month=''){
-     $data1=  $this->monthGeneral($month);
-     $data2=  $this->yearGeneral($month);
-     $data3=  $this->dieselUpdatez();
+ function check_month1($month='',$year=''){
+     $data1=  $this->monthGeneral($month,$year);
+     $data2=  $this->yearGeneral($month,$year);
+     $data3=  $this->dieselUpdatez2($month,$year);
      $data=$data1+$data2+$data3;
      $this->db->select('*');
      $this->db->from('tb_diesel');
      $this->db->like('sold_date',$month,'after');
+     $this->db->like('sold_date',$year,'before');
      $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
     $res=  $this->db->get();
      if($res->num_rows()>0){
@@ -2252,6 +2286,24 @@ public function alert12() {
              return $petrola_data;
          }
  }
+ function yearDiesel1($date,$date2){
+     $res=  $this->db->select_sum('sold_amount')->from('tb_diesel')
+             ->where(array('sold_date >='=>$date,'sold_date <='=>$date2,'seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'sold_amount1'=>$row->sold_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'sold_amount1'=>'Nothing present'
+             );
+             return $petrola_data;
+         }
+ }
  function diesel_solddate($date,$date2){
      $res=  $this->db->select_sum('sold_litre')->from('tb_diesel')
                  ->where(array('sold_date >='=>$date,'sold_date <='=>$date2,'seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
@@ -2270,9 +2322,13 @@ public function alert12() {
              return $petrola_data;
          }
  }
- function monthGeneral($month){
-   $res=  $this->db->select_sum('sold_litre')->from('tb_diesel')
-                ->like('sold_date',$month,'after')->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+ function monthGeneral($month,$year){
+   $this->db->select_sum('sold_litre');
+   $this->db->from('tb_diesel');
+   $this->db ->like('sold_date',$month,'after');
+   $this->db->like('sold_date',$year,'before');
+   $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+   $res=  $this->db->get();
          if($res->num_rows()>0){
              foreach ($res->result() as $row){
                  $petrola_data=array(
@@ -2286,10 +2342,15 @@ public function alert12() {
                  'sold_litre'=>'Nothing present'
              );
              return $petrola_data;
-         }  
+         }   
  }
- function yearGeneral($month){
-    $res=  $this->db->select_sum('sold_amount')->from('tb_diesel')->like('sold_date',$month,'after')->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+ function yearGeneral($month,$year){
+    $this->db->select_sum('sold_amount');
+    $this->db->from('tb_diesel');
+    $this->db->like('sold_date',$month,'after');
+    $this->db->like('sold_date',$year,'before');    
+    $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+    $res=$this->db->get();
          if($res->num_rows()>0){
              foreach ($res->result() as $row){
                  $petrola_data=array(
@@ -2305,6 +2366,28 @@ public function alert12() {
              return $petrola_data;
          } 
  }
+ function yearGeneralz($month,$year){
+    $this->db->select_sum('sold_amount');
+    $this->db->from('tb_diesel');
+    $this->db->like('sold_date',$month,'after');
+    $this->db->like('sold_date',$year,'before');    
+    $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+    $res=$this->db->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'sold_amount1'=>$row->sold_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'sold_amount1'=>'Nothing present'
+             );
+             return $petrola_data;
+         } 
+ }
  function dayKerosine(){
      $this->load->view('accountant_day_reportk');  
  }
@@ -2312,7 +2395,7 @@ public function alert12() {
      $res=  $this->db->get_where('tb_kerosine',array('sold_date'=>$date,'seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
      $data1=  $this->semiKerosine($date);
      $data2=  $this->quarterDiesel($date);
-     $data3=  $this->kerosineUpdatez();
+     $data3=  $this->kerosineUpdatez($date);
      $data=$data1+$data2+$data3;
     if($res->num_rows()>0){
      $this->load->view('accountant_semi_reportk',$data);
@@ -2326,7 +2409,7 @@ public function alert12() {
  function week_kerosine($date='',$date2=''){
      $data1=  $this->yearKerosine($date, $date2);
      $data2=  $this->kerosine_solddate($date, $date2);
-     $data3=  $this->kerosineUpdatez();
+     $data3=  $this->kerosineUpdatez1($date,$data2);
      $data=$data1+$data2+$data3;
      $this->db->select('*');
      $this->db->from('tb_kerosine');
@@ -2341,14 +2424,15 @@ public function alert12() {
  function monthKerosine(){
      $this->load->view('accountant_month_reportk');
  }
- function check_month2($month=''){
-     $data1=  $this->dayGeneral1($month);
-     $data2=  $this->weekGeneral1($month);
-     $data3=  $this->kerosineUpdatez();
+ function check_month2($month='',$year=''){
+     $data1=  $this->dayGeneral1($month,$year);
+     $data2=  $this->weekGeneral1($month,$year);
+     $data3=  $this->kerosineUpdatez2($month,$year);
      $data=$data1+$data2+$data3;
      $this->db->select('*');
      $this->db->from('tb_kerosine');
      $this->db->like('sold_date',$month,'after');
+      $this->db->like('sold_date',$year,'before'); 
      $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
     $res=  $this->db->get();
      if($res->num_rows()>0){
@@ -2410,6 +2494,24 @@ public function alert12() {
              return $petrola_data;
          }
  }
+ function yearKerosine1($date,$date2){
+     $res=  $this->db->select_sum('sold_amount')->from('tb_kerosine')
+             ->where(array('sold_date >='=>$date,'sold_date <='=>$date2,'seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'sold_amount2'=>$row->sold_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'sold_amount2'=>'Nothing present'
+             );
+             return $petrola_data;
+         }
+ }
  function kerosine_solddate($date,$date2){
      $res=  $this->db->select_sum('sold_litre')->from('tb_kerosine')
                  ->where(array('sold_date >='=>$date,'sold_date <='=>$date2,'seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
@@ -2428,9 +2530,13 @@ public function alert12() {
              return $petrola_data;
          }
  }
- function dayGeneral1($month){
-   $res=  $this->db->select_sum('sold_litre')->from('tb_kerosine')
-                ->like('sold_date',$month,'after')->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+ function dayGeneral1($month,$year){
+   $this->db->select_sum('sold_litre');
+   $this->db->from('tb_kerosine');
+   $this->db ->like('sold_date',$month,'after');
+   $this->db->like('sold_date',$year,'before');
+   $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+   $res=  $this->db->get();
          if($res->num_rows()>0){
              foreach ($res->result() as $row){
                  $petrola_data=array(
@@ -2444,10 +2550,15 @@ public function alert12() {
                  'sold_litre'=>'Nothing present'
              );
              return $petrola_data;
-         }  
+         }   
  }
- function weekGeneral1($month){
-    $res=  $this->db->select_sum('sold_amount')->from('tb_kerosine')->like('sold_date',$month,'after')->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+ function weekGeneral1($month,$year){
+    $this->db->select_sum('sold_amount');
+    $this->db->from('tb_kerosine');
+    $this->db->like('sold_date',$month,'after');
+    $this->db->like('sold_date',$year,'before');    
+    $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+    $res=$this->db->get();
          if($res->num_rows()>0){
              foreach ($res->result() as $row){
                  $petrola_data=array(
@@ -2463,8 +2574,30 @@ public function alert12() {
              return $petrola_data;
          } 
  }
- function petrolUpdatez(){
-     $res=  $this->db->get_where('tb_update',array('stat_role'=>  $this->session->userdata('role_station')));
+ function weekGeneralz1($month,$year){
+    $this->db->select_sum('sold_amount');
+    $this->db->from('tb_kerosine');
+    $this->db->like('sold_date',$month,'after');
+    $this->db->like('sold_date',$year,'before');    
+    $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+    $res=$this->db->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'sold_amount2'=>$row->sold_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'sold_amount2'=>'Nothing present'
+             );
+             return $petrola_data;
+         } 
+ }
+ function petrolUpdatez($date){
+     $res=  $this->db->get_where('tb_update',array('updated_date'=>$date,'stat_role'=>  $this->session->userdata('role_station')));
      if($res->num_rows()===1){
          foreach ($res->result() as $row){
              $petrol_price=array(
@@ -2479,9 +2612,49 @@ public function alert12() {
          );
          return $petrol_price;
      }
+ }function petrolUpdatez1($date,$date2){
+             $this->db->select_sum('petrol');
+             $this->db->from('tb_update');
+             $this->db->where(array('updated_date >='=>$date,'updated_date <='=>$date2,'stat_role'=>  $this->session->userdata('role_station')));
+         $res= $this->db->get();
+             if($res->num_rows()===1){
+         foreach ($res->result() as $row){
+             $petrol_price=array(
+                 'petrol_price'=>$row->petrol
+             ); 
+         }
+         unset($row);
+         return $petrol_price;
+     }  else {
+         $petrol_price=array(
+                 'petrol_price'=>''
+         );
+         return $petrol_price;
+     }
+ }function petrolUpdatez2($month,$year){
+            $this->db->select_sum('petrol');
+            $this->db->from('tb_update');
+            $this->db->like('updated_date',$month,'after');
+            $this->db->like('updated_date',$year,'before');
+            $this->db->where(array('stat_role'=>  $this->session->userdata('role_station')));
+            $res= $this->db->get();
+     if($res->num_rows()===1){
+         foreach ($res->result() as $row){
+             $petrol_price=array(
+                 'petrol_price'=>$row->petrol
+             ); 
+         }
+         unset($row);
+         return $petrol_price;
+     }  else {
+         $petrol_price=array(
+                 'petrol_price'=>''
+         );
+         return $petrol_price;
+     }
  }
- function dieselUpdatez(){
-     $res=  $this->db->get_where('tb_update',array('stat_role'=>  $this->session->userdata('role_station')));
+ function dieselUpdatez($date){
+     $res=  $this->db->get_where('tb_update',array('updated_date'=>$date,'stat_role'=>  $this->session->userdata('role_station')));
      if($res->num_rows()===1){
          foreach ($res->result() as $row){
              $petrol_price=array(
@@ -2496,9 +2669,89 @@ public function alert12() {
          );
          return $petrol_price;
      }
+ }function dieselUpdatez1($date,$date2){
+             $this->db->select_sum('diesel');
+             $this->db->from('tb_update');
+             $this->db->where(array('updated_date >='=>$date,'updated_date <='=>$date2,'stat_role'=>  $this->session->userdata('role_station')));
+         $res= $this->db->get();
+             if($res->num_rows()===1){
+         foreach ($res->result() as $row){
+             $petrol_price=array(
+                 'diesel_price'=>$row->diesel
+             ); 
+         }
+         unset($row);
+         return $petrol_price;
+     }  else {
+         $petrol_price=array(
+                 'diesel_price'=>''
+         );
+         return $petrol_price;
+     }
+ }function dieselUpdatez2($month,$year){
+            $this->db->select_sum('diesel');
+            $this->db->from('tb_update');
+            $this->db->like('updated_date',$month,'after');
+            $this->db->like('updated_date',$year,'before');
+            $this->db->where(array('stat_role'=>  $this->session->userdata('role_station')));
+            $res= $this->db->get();
+     if($res->num_rows()===1){
+         foreach ($res->result() as $row){
+             $petrol_price=array(
+                 'diesel_price'=>$row->diesel
+             ); 
+         }
+         unset($row);
+         return $petrol_price;
+     }  else {
+         $petrol_price=array(
+                 'diesel_price'=>''
+         );
+         return $petrol_price;
+     }
  }
- function kerosineUpdatez(){
-     $res=  $this->db->get_where('tb_update',array('stat_role'=>  $this->session->userdata('role_station')));
+ function kerosineUpdatez($date){
+     $res=  $this->db->get_where('tb_update',array('updated_date'=>$date,'stat_role'=>  $this->session->userdata('role_station')));
+     if($res->num_rows()===1){
+         foreach ($res->result() as $row){
+             $petrol_price=array(
+                 'kerosine_price'=>$row->kerosine
+             ); 
+         }
+         unset($row);
+         return $petrol_price;
+     }  else {
+         $petrol_price=array(
+                 'kerosine_price'=>''
+         );
+         return $petrol_price;
+     }
+ }function kerosineUpdatez1($date,$date2){
+             $this->db->select_sum('kerosine');
+             $this->db->from('tb_update');
+             $this->db->where(array('updated_date >='=>$date,'updated_date <='=>$date2,'stat_role'=>  $this->session->userdata('role_station')));
+         $res= $this->db->get();
+             if($res->num_rows()===1){
+         foreach ($res->result() as $row){
+             $petrol_price=array(
+                 'kerosine_price'=>$row->kerosine
+             ); 
+         }
+         unset($row);
+         return $petrol_price;
+     }  else {
+         $petrol_price=array(
+                 'kerosine_price'=>''
+         );
+         return $petrol_price;
+     }
+ }function kerosineUpdatez2($month,$year){
+            $this->db->select_sum('kerosine');
+            $this->db->from('tb_update');
+            $this->db->like('updated_date',$month,'after');
+            $this->db->like('updated_date',$year,'before');
+            $this->db->where(array('stat_role'=>  $this->session->userdata('role_station')));
+            $res= $this->db->get();
      if($res->num_rows()===1){
          foreach ($res->result() as $row){
              $petrol_price=array(
@@ -2514,10 +2767,52 @@ public function alert12() {
          return $petrol_price;
      }
  }
- function oilUpdatez(){
+ function oilUpdatez($date){
      $this->db->select('*');
      $this->db->from('oil_update');
      $this->db->join('tb_oil','tb_oil.prod_qnty = oil_update.oil_product');
+     $this->db->where(array('date_update'=>$date,'stat_rolez'=>  $this->session->userdata('role_station')));
+     $res=  $this->db->get();
+     if($res->num_rows()>0){
+         foreach ($res->result() as $row){
+             $petrol_price=array(
+                 'oil_price'=>$row->oil_cost
+             );
+         }
+         unset($row);
+         return $petrol_price;
+     }  else {
+         $petrol_price=array(
+                 'oil_price'=>''
+         );
+         return $petrol_price;
+     }
+ }function oilUpdatez1($date,$date2){
+     $this->db->select('*');
+     $this->db->from('oil_update');
+     $this->db->join('tb_oil','tb_oil.prod_qnty = oil_update.oil_product');
+     $this->db->where(array('date_update >='=>$date,'date_update <='=>$date2,'stat_rolez'=>  $this->session->userdata('role_station')));
+     $res=  $this->db->get();
+     if($res->num_rows()>0){
+         foreach ($res->result() as $row){
+             $petrol_price=array(
+                 'oil_price'=>$row->oil_cost
+             );
+         }
+         unset($row);
+         return $petrol_price;
+     }  else {
+         $petrol_price=array(
+                 'oil_price'=>''
+         );
+         return $petrol_price;
+     }
+ }function oilUpdatez2($month,$year){
+     $this->db->select('*');
+     $this->db->from('oil_update');
+     $this->db->join('tb_oil','tb_oil.prod_qnty = oil_update.oil_product');
+     $this->db->like('date_update',$month,'after');
+     $this->db->like('date_update',$year,'before');
      $this->db->where(array('stat_rolez'=>  $this->session->userdata('role_station')));
      $res=  $this->db->get();
      if($res->num_rows()>0){
@@ -2561,7 +2856,7 @@ public function alert12() {
  function day_oil($date=''){
      $data1=  $this->semiOil($date);
      $data2=$this->quarterOil($date);
-     $data3=  $this->oilUpdatez();
+     $data3=  $this->oilUpdatez($date);
      $data=$data1+$data2+$data3;
     $this->db->select('*');
      $this->db->from('tb_oil');
@@ -2637,6 +2932,27 @@ public function alert12() {
              return $petrola_data;
          }
  }
+ function yearOil1($date,$date2){
+     $this->db->select_sum('sold_amount');
+     $this->db->from('tb_oil');
+     $this->db->join('oil_update','oil_update.oil_product= tb_oil.prod_qnty');
+     $this->db->where(array('sold_date >='=>$date,'sold_date <='=>$date2,'seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+     $res=  $this->db->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'sold_amount3'=>$row->sold_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'sold_amount3'=>'Nothing present'
+             );
+             return $petrola_data;
+         }
+ }
  function oil_solddate($date,$date2){
      $this->db->select_sum('sold_qnty');
      $this->db->from('tb_oil');
@@ -2658,11 +2974,12 @@ public function alert12() {
              return $petrola_data;
          }
  }
- function dayGeneral3($month){
+ function dayGeneral3($month,$year){
    $this->db->select_sum('sold_qnty');
    $this->db->from('tb_oil');
    $this->db->join('oil_update','oil_update.oil_product= tb_oil.prod_qnty');
    $this->db->like('sold_date',$month,'after');
+   $this->db->like('sold_date',$year,'before');
    $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
    $res=$this->db->get();
          if($res->num_rows()>0){
@@ -2680,11 +2997,12 @@ public function alert12() {
              return $petrola_data;
          }  
  }
- function weekGeneral3($month){
+ function weekGeneral3($month,$year){
    $this->db->select_sum('sold_amount');
    $this->db->from('tb_oil');
    $this->db->join('oil_update','oil_update.oil_product= tb_oil.prod_qnty');
    $this->db->like('sold_date',$month,'after');
+   $this->db->like('sold_date',$year,'before');
    $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
    $res=$this->db->get();
          if($res->num_rows()>0){
@@ -2698,6 +3016,29 @@ public function alert12() {
          }  else {
              $petrola_data=array(
                  'sold_amount'=>'Nothing present'
+             );
+             return $petrola_data;
+         } 
+ }
+ function weekGeneralz3($month,$year){
+   $this->db->select_sum('sold_amount');
+   $this->db->from('tb_oil');
+   $this->db->join('oil_update','oil_update.oil_product= tb_oil.prod_qnty');
+   $this->db->like('sold_date',$month,'after');
+   $this->db->like('sold_date',$year,'before');
+   $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+   $res=$this->db->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'sold_amount3'=>$row->sold_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'sold_amount3'=>'Nothing present'
              );
              return $petrola_data;
          } 
@@ -2718,7 +3059,7 @@ public function alert12() {
  function week_oil($date='',$date2=''){
      $data1=  $this->yearOil($date, $date2);
      $data2=  $this->oil_solddate($date, $date2);
-     $data3=  $this->oilUpdatez();
+     $data3=  $this->oilUpdatez1($date,$date2);
      $data=$data1+$data2+$data3;
      $this->db->select('*');
      $this->db->from('tb_oil');
@@ -2743,14 +3084,15 @@ public function alert12() {
          echo '<p class="alert alert-warning"> Nothing has been sold</p>';
      }
  }
- function check_month3($month=''){
-     $data1=  $this->dayGeneral3($month);
-     $data2=  $this->weekGeneral3($month);
-     $data3=  $this->oilUpdatez();
+ function check_month3($month='',$year=''){
+     $data1=  $this->dayGeneral3($month,$year);
+     $data2=  $this->weekGeneral3($month,$year);
+     $data3=  $this->oilUpdatez2($month,$year);
      $data=$data1+$data2+$data3;
      $this->db->select('*');
      $this->db->from('tb_oil');
      $this->db->like('sold_date',$month,'after');
+     $this->db->like('sold_date',$year,'before');
      $this->db->where(array('seller_status'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
     $res=  $this->db->get();
      if($res->num_rows()>0){
@@ -2759,25 +3101,225 @@ public function alert12() {
         echo '<p class="alert alert-warning"> Nothing sold to this '.$month.' '.'Month</p>'; 
      }
  }
- function general_month($month=''){
-    $data1=  $this->dayGeneral($month);
-    $data2= $this->weekGeneral($month);
-    $data3=  $this->dayGeneral1($month);
-    $data4=  $this->weekGeneral1($month);
-    $data5=  $this->dayGeneral3($month);
-    $data6=  $this->weekGeneral3($month);
-    $data7=  $this->monthGeneral($month);
-    $data8=  $this->yearGeneral($month);
-    $data9=  $this->petrolUpdatez();
-    $data10=  $this->dieselUpdatez();
-    $data11=  $this->kerosineUpdatez();
-    $data12=  $this->oilUpdatez();
-    $data13=  $this->scallable();
-    $data14=  $this->extensibility();
-    $data=$data1+$data2+$data3+$data4+$data5+$data6+$data7+$data8+$data9+$data10+$data11+$data12+$data13+$data14;
+ function general_month($month='',$year=''){
+    $data1=  $this->dayGeneral($month,$year);
+    $data2= $this->weekGeneral($month,$year);
+    $data3=  $this->dayGeneral1($month,$year);
+    $data4=  $this->weekGeneral1($month,$year);
+    $data5=  $this->dayGeneral3($month,$year);
+    $data6=  $this->weekGeneral3($month,$year);
+    $data7=  $this->monthGeneral($month,$year);
+    $data8=  $this->yearGeneral($month,$year);
+    $data9=  $this->petrolUpdatez2($month,$year);
+    $data10=  $this->dieselUpdatez2($month,$year);
+    $data11=  $this->kerosineUpdatez2($month,$year);
+    $data12=  $this->oilUpdatez2($month,$year);
+    $data14=  $this->extensibility($month,$year);
+    $data13= $this->dayReal($month, $year);
+    $data15=  $this->dayReal1($month, $year);
+    $data16=  $this->dayReal2($month, $year);
+    $data17=  $this->dayReal3($month, $year);
+    $data18=  $this->weekGeneralz3($month,$year);
+    $data19=  $this->weekGeneralz1($month,$year);
+    $data20=  $this->yearGeneralz($month,$year);
+    $data=$data1+$data2+$data3+$data4+$data5+$data6+$data7+$data8+$data9+$data10+$data11
+            +$data12+$data13+$data14+$data15+$data16+$data17+$data18+$data19+$data20;
+    $this->load->view('general_report',$data);
+ }
+ function dayReal($month,$year){
+   $this->db->select_sum('purchased_amount');
+   $this->db->from('tb_petrol');
+   $this->db ->like('entray_date',$month,'after');
+   $this->db->like('entray_date',$year,'before');
+   $this->db->where(array('added'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+   $res=  $this->db->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'petrol_amount'=>$row->purchased_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'petrol_amount'=>'Nothing present'
+             );
+             return $petrola_data;
+         }   
+ }
+ function dayReal1($month,$year){
+   $this->db->select_sum('purchased_amount');
+   $this->db->from('tb_diesel');
+   $this->db ->like('entray_date',$month,'after');
+   $this->db->like('entray_date',$year,'before');
+   $this->db->where(array('stat_role'=>  $this->session->userdata('role_station')));
+   $res=  $this->db->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'diesel_amount'=>$row->purchased_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'diesel_amount'=>'Nothing present'
+             );
+             return $petrola_data;
+         }   
+ }
+ function dayReal2($month,$year){
+   $this->db->select_sum('purchased_amount');
+   $this->db->from('tb_kerosine');
+   $this->db ->like('entray_date',$month,'after');
+   $this->db->like('entray_date',$year,'before');
+   $this->db->where(array('stat_role'=>  $this->session->userdata('role_station')));
+   $res=  $this->db->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'kerosine_amount'=>$row->purchased_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'kerosine_amount'=>'Nothing present'
+             );
+             return $petrola_data;
+         }   
+ }
+ function dayReal3($month,$year){
+   $this->db->select_sum('purchased_amount');
+   $this->db->from('tb_oil');
+   $this->db->join('oil_update','oil_update.oil_product= tb_oil.prod_qnty');
+   $this->db->like('entray_date',$month,'after');
+   $this->db->like('entray_date',$year,'before');
+   $this->db->where(array('stat_role'=>  $this->session->userdata('role_station')));
+   $res=  $this->db->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'oil_amount'=>$row->purchased_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'oil_amount'=>'Nothing present'
+             );
+             return $petrola_data;
+         }   
+ }
+ function setts($date,$date2){
+     $res=  $this->db->select_sum('purchased_amount')
+             ->from('tb_petrol')
+             ->where(array('entray_date >='=>$date,'entray_date <='=>$date2,'added'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+     if($res->num_rows()>0){
+         foreach ($res->result() as $row){
+         $petrola_data=array(
+                     'petrol_amount'=>$row->purchased_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'petrol_amount'=>'Nothing present'
+             );
+             return $petrola_data;
+         }   
+ }function setts1($date,$date2){
+     $res=  $this->db->select_sum('purchased_amount')
+             ->from('tb_diesel')
+             ->where(array('entray_date >='=>$date,'entray_date <='=>$date2,'added'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+     if($res->num_rows()>0){
+         foreach ($res->result() as $row){
+         $petrola_data=array(
+                     'diesel_amount'=>$row->purchased_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'diesel_amount'=>'Nothing present'
+             );
+             return $petrola_data;
+         }   
+ }function setts2($date,$date2){
+     $res=  $this->db->select_sum('purchased_amount')
+             ->from('tb_kerosine')
+             ->where(array('entray_date >='=>$date,'entray_date <='=>$date2,'added'=>'yes','stat_role'=>  $this->session->userdata('role_station')))->get();
+     if($res->num_rows()>0){
+         foreach ($res->result() as $row){
+         $petrola_data=array(
+                     'kerosine_amount'=>$row->purchased_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'kerosine_amount'=>'Nothing present'
+             );
+             return $petrola_data;
+         }   
+ }function setts3($date,$date2){
+   $this->db->select_sum('purchased_amount');
+   $this->db->from('tb_oil');
+   $this->db->join('oil_update','oil_update.oil_product= tb_oil.prod_qnty');
+   $this->db->where(array('entray_date >='=>$date,'entray_date <='=>$date2,'added'=>'yes','stat_role'=>  $this->session->userdata('role_station')));
+   $res=  $this->db->get();
+         if($res->num_rows()>0){
+             foreach ($res->result() as $row){
+                 $petrola_data=array(
+                     'oil_amount'=>$row->purchased_amount,
+                 );
+             }
+             unset($row);
+             return $petrola_data;
+         }  else {
+             $petrola_data=array(
+                 'oil_amount'=>'Nothing present'
+             );
+             return $petrola_data;
+         }    
+ }
+ function weekView(){
+ $this->load->view('accountant_year_reportd');    
+ }
+ function week_all_view($date,$date2){
+     $data1=  $this->yearPetrol($date, $date2);
+     $data2=  $this->petrol_solddate($date, $date2);
+     $data3=  $this->yearDiesel($date, $date2);
+     $data4=  $this->diesel_solddate($date, $date2);
+     $data5=  $this->yearKerosine($date, $date2);
+     $data6=  $this->kerosine_solddate($date, $date2);
+     $data7=  $this->yearOil($date, $date2);
+     $data8=  $this->oil_solddate($date, $date2);
+     $data9=  $this->petrolUpdatez1($date, $date2);
+     $data10=  $this->dieselUpdatez1($date, $date2);
+    $data11=  $this->kerosineUpdatez1($date, $date2);
+    $data12=  $this->oilUpdatez1($date, $date2);
+    $data13= $this->setts($date, $date2);
+    $data15=  $this->setts1($date, $date2);
+    $data16=  $this->setts2($date, $date2);
+    $data17=  $this->setts3($date, $date2);
+    $data14=  $this->extensibility1($date, $date2);
+    $data18=  $this->yearDiesel1($date, $date2);
+    $data19=  $this->yearKerosine($date, $date2);
+    $data20=  $this->yearOil($date, $date2);
+    $data=$data1+$data2+$data3+$data4+$data5+$data6+$data7+$data8+
+            $data9+$data10+$data11+$data12+$data13+$data14+$data15+$data16+$data17+$data18+$data19+$data20;
     $this->load->view('general_report',$data);
  }
  }
+ 
  
 
 
