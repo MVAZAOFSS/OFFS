@@ -25,8 +25,9 @@
         onSelect: function(date,instance){
             $('.olddate').html('<img src="<?php echo base_url('img/load.gif');?>">');
            var url="<?php echo site_url('accountant_controller/day_oil');?>";
-           var url2=url+'/'+$(this).val();
-           $.get(url2,function(data){
+           var url3="<?php echo $id;?>";
+           var url4=url+'/'+url3+'/'+$(this).val();
+           $.get(url4,function(data){
                setTimeout(function(){
                $('.olddate').html(data);
                },2000);

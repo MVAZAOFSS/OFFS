@@ -44,7 +44,8 @@
     $('.olddate').html('<img src="<?php echo base_url('img/load.gif');?>">');
      var month=document.getElementById('cyle').value;
     var url="<?php echo site_url('accountant_controller/check_month3');?>";
-    var url2=url+'/'+$.trim(month);
+    var url0="<?php echo $id;?>";
+    var url2=url+'/'+url0+'/'+$.trim(month);
     var url3=url2+'/'+$('.yearz').val();
     $.get(url3,function(data){
         setTimeout(function(){

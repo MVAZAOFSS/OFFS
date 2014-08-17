@@ -46,7 +46,8 @@
         e.preventDefault();
             $('.olddate').html('<img src="<?php echo base_url('img/load.gif');?>">');
            var url="<?php echo site_url('accountant_controller/week_oil');?>";
-           var url2=url+'/'+$('.datepicker').val();
+           var url0="<?php echo $id;?>";
+           var url2=url+'/'+url0+'/'+$('.datepicker').val();
            var url3=url2+'/'+$('.datepicker1').val();
            $.get(url3,function(data){
                setTimeout(function(){

@@ -10,8 +10,21 @@
     <div class="col-lg-9">
            <div class="well well-sm">
             <label class="text text-center text-primary"> Frequently report of <span class="badge"> petrol</span>
-            <div class="btn-group pull-right" style="margin-left: 360px;">
-             <a class="btn btn-default btn-xs clk" href="#">
+            <div class="btn-group pull-right" style="margin-left: 300px;">
+                <a class="btn btn-warning btn-xs" data-toggle="dropdown">For OIl <span class="fa fa-caret-down"></span></a>
+                <ul class="dropdown-menu" role="menu">
+              <?php
+        $resoil=$this->db->get_where('oil_update',array('stat_rolez'=>$this->session->userdata('role_station')));
+        if($resoil->num_rows()>0){
+        foreach ($resoil->result() as $rowz){
+        ?> 
+        <li><a href="#" onclick="oilView('<?php echo $rowz->oil_id;?>')"><?php echo $rowz->oil_product;?></a></li>
+       <?php
+        }
+        }
+        ?>
+         </ul>
+           <a class="btn btn-default btn-xs clk" href="#">
             <i class="fa fa-cog"></i> Options <b class=" fa fa-caret-right"></b></a>
             </div>
             </label>
@@ -119,6 +132,17 @@
             $('.petrol').html(data);
             },2000);
         });
+    }
+    function oilView(id){
+        $('.petrol').html('Loading...');
+        var url="<?php echo site_url('accountant_controller/oilDisturb');?>";
+        var url2=url+'/'+id;
+        $.get(url2,function(data){
+            setTimeout(function(){
+                $('.petrol').html(data);
+            },2000);
+        });
+        
     }
     </script>
     </div>
